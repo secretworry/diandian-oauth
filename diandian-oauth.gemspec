@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'diandian-oauth'
-  s.version     = '0.0.1'
+  s.version     = '0.0.2'
   s.date        = '2012-07-24'
   s.summary     = "Client for diandian API"
   s.description = "A Ruby Client for diandian API"
