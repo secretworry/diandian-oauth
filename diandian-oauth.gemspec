@@ -8,4 +8,12 @@ Gem::Specification.new do |s|
   s.email       = 'dusiyu@diandian.com'
   s.files       = ["lib/diandian_oauth.rb"]
   s.homepage    = 'https://github.com/secretworry/diandian-oauth'
+
+  s.files         = `git ls-files`.split("\n")
+  s.test_files    = `git ls-files -- test/*`.split("\n")
+  s.require_paths = ["lib"]
+
+  s.add_dependency("oauth2", '~> 0.8.0')
+  s.add_dependency("activemodel", '~> 3.2.6')
+  s.add_dependency("activesupport", '~> 3.2.1')
 end
