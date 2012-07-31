@@ -4,7 +4,7 @@ require 'diandian_oauth/exceptions'
 require 'active_support/core_ext'
 require 'logger'
 module DiandianOAuth
-	VERSION = '0.0.2'
+	VERSION = '0.0.3'
   module Logger
     def logger *args
       if args.empty?
