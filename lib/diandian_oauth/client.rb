@@ -1,7 +1,6 @@
 require 'oauth2'
 module DiandianOAuth
 	class Client
-
 		attr_accessor :api
 		def initialize client_id, client_secret, options={}
       @api = options[:api] || DiandianOAuth::API.new

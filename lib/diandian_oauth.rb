@@ -1,5 +1,6 @@
 require 'diandian_oauth/api'
 require 'diandian_oauth/client'
+require 'diandian_oauth/exceptions'
 require 'active_support/core_ext'
 require 'logger'
 module DiandianOAuth

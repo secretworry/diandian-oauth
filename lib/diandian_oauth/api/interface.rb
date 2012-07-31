@@ -59,6 +59,10 @@ module DiandianOAuth
             :raise_errors => false,
             :parse => :json
           }
+          request_url = self.request_url(params)
+          if DiandianOAuth.logger.debug?
+            DiandianOAuth.logger.debug("request with action:'#{action}', request_url:'#{request_url}'")
+          end
           access_token.request( action, request_url, options, &block)
         end
         protected
@@ -84,7 +88,8 @@ module DiandianOAuth
           def param name, options = {}
             params[name.to_sym] = Param.new( name.to_s, options)
           end
-          def verb
+          def verb verb=nil
+            @verb = verb if verb
             @verb ||= 'get'
           end
           def params
@@ -107,7 +112,7 @@ module DiandianOAuth
         end
       end #UserLikes
 
-      class UserFollowing < Base
+      class UserFollowings < Base
         param :limit, :required => false
         param :offset, :required => false
         def request_url params={}
@@ -115,13 +120,13 @@ module DiandianOAuth
         end
       end #UserFollowing
 
-      class TagMyTags < Base
+      class MyTags < Base
         def request_url params={}
           API.url_for '/tag/mytags'
         end
       end #TagMyTags
 
-      class BlogInterface < Base
+      class Blog < Base
         protected
         def blog_request_url params
           blog_cname = params[:blogCName]
@@ -159,10 +164,81 @@ module DiandianOAuth
         param :offset, :required => false
         def request_url params={}
           blog_cname = params[:blogCName]
-          raise ParamIsRequiredException.new("blogCName is required for interface #{BlogInfo.name}") unless blog_cname
+          raise ParamIsRequiredException.new("blogCName is required for interface #{self.class.name}") unless blog_cname
           API.url_for "/blog/#{blog_cname}/info"
         end
       end #BlogFollowers
+
+      class Posts < Base
+        param :tag, :required => false
+        param :limit, :required => false
+        param :offset, :required => false
+        param :id, :required => false
+        param :reblogInfo, :required => false
+        param :notesInfo, :required => false
+        param :filter, :required => false
+        def request_url params={}
+          blog_cname = params[:blogCName]
+          raise ParamIsRequiredException.new("blogCName is required for interface #{self.class.name}") unless blog_cname
+          path = "/blog/#{blog_cname}/posts"
+          if params[:type]
+            path = path + "/#{type}"
+          end
+          API.url_for path
+        end
+      end # Posts
+
+      class HomeFeeds < Base
+        param :limit, :required => false
+        param :offset, :required => false
+        param :type, :required => false
+        param :sinceId, :required => false
+        param :reblogInfo, :required => false
+        param :notesInfo, :required => false
+        param :filter, :required => false
+        def request_url params={}
+          API.url_fo "/user/home"
+        end
+      end # Home
+
+      class TagFeeds < Base
+        param :limit, :required => false
+        param :tag, :required => false
+        param :sinceId, :required => false
+        param :reblogInfo, :required => false
+        param :notesInfo, :required => false
+        param :filter, :required => false
+
+        def request_url params={}
+          tag = params[:tag]
+          raise ParamIsRequiredException("tag is required for interface #{self.class.name}") unless tag
+          API.url_for "/tag/posts/#{tag}"
+        end
+      end #TagFeeds
+
+      class Follow < Base
+        verb :post
+        param :blogCName, :required => true
+        def request_url params={}
+          API.url_for "/user/follow"
+        end
+      end # Follow
+
+      class Unfollow < Base
+        verb :post
+        param :blogCName, :required => true
+        def request_url params={}
+          API.url_for '/user/unfollow'
+        end
+      end # Unfollow
+
+      class Submissions < Base
+        def request_url params={}
+          blog_cname = params[:blogCName]
+          raise ParamIsRequiredException("blogCName is required for interface #{self.class.name}") unless blog_cname
+          API.url_for "/blog/#{blog_cname}/submission"
+        end
+      end
     end # Interface
   end
 end
