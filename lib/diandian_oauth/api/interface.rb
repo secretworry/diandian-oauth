@@ -44,6 +44,13 @@ module DiandianOAuth
         def request_url params = {}
           raise 'subclasses must implement this method'
         end
+
+        # when the access_token is out-of-date, refresh it automatically
+        def apply! access_token, params, &block
+          access_token.refresh! if access_token.expired?
+          self.apply access_token, params, &block
+        end
+
         def apply access_token, params, &block
           raise TokenExpiredException if access_token.expired?
           params ||= {}

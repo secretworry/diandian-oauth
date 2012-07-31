@@ -54,11 +54,17 @@ module DiandianOAuth
     end
 
 		def method_missing(meth, *args, &block)
+      force = meth.to_s =~ /!$/
+      meth = $` if force
 			interface = @api.interface meth.to_sym
 			if interface
         access_token = self.access_token
         raise 'access_token is required' unless access_token
-				interface.apply access_token, args[0], &block
+        if force
+          interface.apply! access_token, args[0], &block
+        else
+				  interface.apply access_token, args[0], &block
+        end # force
 			else
 				super
 			end
