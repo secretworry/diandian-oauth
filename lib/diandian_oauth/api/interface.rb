@@ -1,4 +1,3 @@
-
 module DiandianOAuth
   class API
     module Interface
@@ -198,6 +197,107 @@ module DiandianOAuth
         end
       end # Posts
 
+      class CreatePost < Base
+        verb :post
+        param :tag, :required => false
+        param :slug, :required => false
+        #text
+        param :title, :required => false
+        param :body, :required => false
+        #photo
+        param :caption, :required => false
+        param :layout, :required => false
+        param :data, :required => false
+        param :itemDesc, :required => false
+        #link
+        param :title, :required => false
+        param :url, :required => false
+        param :description, :required => false
+
+        #audio
+        param :caption, :required => false
+        param :data, :required => false
+        param :musicName, :required => false
+        param :musicSinger, :required => false
+        param :albumName, :required => false
+
+        #video
+        param :caption, :required => false
+        param :sourceUrl, :required => false
+
+        def request_url params={}
+          blog_cname = params[:blocCName]
+          blog_uuid = params[:blogUuid]
+          raise ParamIsRequiredException.new("blogCName or blogUuid is required for interface #{self.class.name}") unless blog_cname || blog_uuid
+          type = params[:type]
+          raise ParamIsRequiredException.new("type is required for interface #{self.class.name}") unless type
+          API.url_for "/blog/#{blog_cname || blog_uuid}/post"
+        end
+      end
+
+      class EditPost < Base
+        verb :post
+        param :id, :required => true
+        param :tag, :required => false
+        param :slug, :required => false
+        #text
+        param :title, :required => false
+        param :body, :required => false
+        #photo
+        param :caption, :required => false
+        param :layout, :required => false
+        param :data, :required => false
+        param :itemDesc, :required => false
+        #link
+        param :title, :required => false
+        param :url, :required => false
+        param :description, :required => false
+
+        #audio
+        param :caption, :required => false
+        param :data, :required => false
+        param :musicName, :required => false
+        param :musicSinger, :required => false
+        param :albumName, :required => false
+
+        #video
+        param :caption, :required => false
+        param :sourceUrl, :required => false
+
+        def request_url params={}
+          blog_cname = params[:blocCName]
+          blog_uuid = params[:blogUuid]
+          raise ParamIsRequiredException.new("blogCName or blogUuid is required for interface #{self.class.name}") unless blog_cname || blog_uuid
+          type = params[:type]
+          raise ParamIsRequiredException.new("type is required for interface #{self.class.name}") unless type
+          API.url_for "/blog/#{blog_cname || blog_uuid}/post/edit"
+        end
+      end
+
+      class DeletePost < Base
+        verb :post
+        param :id, :required => true
+        def request_url params={}
+          blog_cname = params[:blocCName]
+          blog_uuid = params[:blogUuid]
+          raise ParamIsRequiredException.new("blogCName or blogUuid is required for interface #{self.class.name}") unless blog_cname || blog_uuid
+          API.url_for "/blog/#{blog_cname || blog_uuid}/post/delete"
+        end
+      end
+
+      class ReblogPost < Base
+        verb :post
+        param :id, :required => true
+        param :tag, :required => false
+        param :comment, :required => false
+        def request_url params={}
+          blog_cname = params[:blocCName]
+          blog_uuid = params[:blogUuid]
+          raise ParamIsRequiredException.new("blogCName or blogUuid is required for interface #{self.class.name}") unless blog_cname || blog_uuid
+          API.url_for "/blog/#{blog_cname || blog_uuid}/post/reblog"
+        end
+      end
+
       class HomeFeeds < Base
         param :limit, :required => false
         param :offset, :required => false
@@ -309,6 +409,7 @@ module DiandianOAuth
 
       class RejectSubmission < Base
         verb :post
+        param :reason, :required => false
         def request_url params={}
           blog_cname = params[:blocCName]
           blog_uuid = params[:blogUuid]

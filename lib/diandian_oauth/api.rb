@@ -23,6 +23,8 @@ module DiandianOAuth
     interface :blog_avatar, Interface::BlogAvatar
     interface :blog_followers, Interface::BlogFollowers
     interface :posts, Interface::Posts
+    interface :delete_post, Interface::DeletePost
+    interface :reblog_post, Interface::ReblogPost
     interface :home_feeds, Interface::HomeFeeds
     interface :tag_feeds, Interface::TagFeeds
     interface :follow, Interface::Follow
