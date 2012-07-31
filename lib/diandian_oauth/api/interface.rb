@@ -136,9 +136,10 @@ module DiandianOAuth
       class Blog < Base
         protected
         def blog_request_url params
-          blog_cname = params[:blogCName]
-          raise ParamIsRequiredException.new("blogCName is required for interface #{self.class.name}") unless blog_cname
-          API.url_for "/blog/#{blog_cname}"
+          blog_cname = params[:blocCName]
+          blog_uuid = params[:blogUuid]
+          raise ParamIsRequiredException.new("blogCName or blogUuid is required for interface #{self.class.name}") unless blog_cname || blog_uuid
+          API.url_for "/blog/#{blog_cname||blog_uuid}"
         end
       end #BlogInterface
 
@@ -170,9 +171,10 @@ module DiandianOAuth
         param :limit, :required => false
         param :offset, :required => false
         def request_url params={}
-          blog_cname = params[:blogCName]
-          raise ParamIsRequiredException.new("blogCName is required for interface #{self.class.name}") unless blog_cname
-          API.url_for "/blog/#{blog_cname}/info"
+          blog_cname = params[:blocCName]
+          blog_uuid = params[:blogUuid]
+          raise ParamIsRequiredException.new("blogCName or blogUuid is required for interface #{self.class.name}") unless blog_cname || blog_uuid
+          API.url_for "/blog/#{blog_cname || blog_uuid}/info"
         end
       end #BlogFollowers
 
@@ -185,9 +187,10 @@ module DiandianOAuth
         param :notesInfo, :required => false
         param :filter, :required => false
         def request_url params={}
-          blog_cname = params[:blogCName]
-          raise ParamIsRequiredException.new("blogCName is required for interface #{self.class.name}") unless blog_cname
-          path = "/blog/#{blog_cname}/posts"
+          blog_cname = params[:blocCName]
+          blog_uuid = params[:blogUuid]
+          raise ParamIsRequiredException.new("blogCName or blogUuid is required for interface #{self.class.name}") unless blog_cname || blog_uuid
+          path = "/blog/#{blog_cname||blog_uuid}/posts"
           if params[:type]
             path = path + "/#{type}"
           end
@@ -218,7 +221,7 @@ module DiandianOAuth
 
         def request_url params={}
           tag = params[:tag]
-          raise ParamIsRequiredException("tag is required for interface #{self.class.name}") unless tag
+          raise ParamIsRequiredException.new("tag is required for interface #{self.class.name}") unless tag
           API.url_for "/tag/posts/#{tag}"
         end
       end #TagFeeds
@@ -239,11 +242,80 @@ module DiandianOAuth
         end
       end # Unfollow
 
+      class WatchTag < Base
+        verb :post
+        def request_url params={}
+          tag = params[:tag]
+          raise ParamIsRequiredException.new("tag is required for interface #{self.class.name}") unless tag
+          API.url_for '/tag/watch/#{tag}'
+        end
+      end
+
+      class UnwatchTag < Base
+        verb :post
+        def request_url params={}
+          tag = params[:tag]
+          raise ParamIsRequiredException.new("tag is required for interface #{self.class.name}") unless tag
+          API.url_for '/tag/watch/#{tag}'
+        end
+      end
+
       class Submissions < Base
         def request_url params={}
-          blog_cname = params[:blogCName]
-          raise ParamIsRequiredException("blogCName is required for interface #{self.class.name}") unless blog_cname
-          API.url_for "/blog/#{blog_cname}/submission"
+          blog_cname = params[:blocCName]
+          blog_uuid = params[:blogUuid]
+          raise ParamIsRequiredException.new("blogCName or blogUuid is required for interface #{self.class.name}") unless blog_cname || blog_uuid
+          API.url_for "/blog/#{blog_cname||blog_uuid}/submission"
+        end
+      end #Submissions
+
+      class Submit < Base
+        verb :post
+        param :tag, :required => false
+        param :slug, :required => false
+        #text
+        param :title, :required => false
+        param :body, :required => false
+        #photo
+        param :caption, :required => false
+        param :layout, :required => false
+        param :data, :required => false
+        param :itemDesc, :required => false
+        #link
+        param :title, :required => false
+        param :url, :required => false
+        param :description, :required => false
+
+        #audio
+        param :caption, :required => false
+        param :data, :required => false
+        param :musicName, :required => false
+        param :musicSinger, :required => false
+        param :albumName, :required => false
+
+        #video
+        param :caption, :required => false
+        param :sourceUrl, :required => false
+
+        def request_url params={}
+          blog_cname = params[:blocCName]
+          blog_uuid = params[:blogUuid]
+          raise ParamIsRequiredException.new("blogCName or blogUuid is required for interface #{self.class.name}") unless blog_cname || blog_uuid
+          type = params[:type]
+          raise ParamIsRequiredException.new("type is required for interface #{self.class.name}") unless type
+          API.url_for "/blog/#{blog_cname || blog_uuid}/submission/#{type}"
+        end
+      end
+
+      class RejectSubmission < Base
+        verb :post
+        def request_url params={}
+          blog_cname = params[:blocCName]
+          blog_uuid = params[:blogUuid]
+          raise ParamIsRequiredException.new("blogCName or blogUuid is required for interface #{self.class.name}") unless blog_cname || blog_uuid
+          id = params[:id]
+          raise ParamIsRequiredException.new("id is required for interface #{self.class.name}") unless id
+          API.url_for "/blog/#{blog_cname || blog_uuid}/submission/reject/#{id}"
         end
       end
     end # Interface

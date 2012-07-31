@@ -27,6 +27,10 @@ module DiandianOAuth
     interface :tag_feeds, Interface::TagFeeds
     interface :follow, Interface::Follow
     interface :unfollow, Interface::Unfollow
+    interface :watch_tag, Interface::WatchTag
+    interface :unwatch_tag, Interface::UnwatchTag
     interface :submissions, Interface::Submissions
+    interface :submit, Interface::Submit
+    interface :reject_submission, Interface::RejectSubmission
 	end
 end
