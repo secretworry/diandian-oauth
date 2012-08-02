@@ -2,6 +2,7 @@ require 'diandian_oauth/api'
 require 'diandian_oauth/client'
 require 'diandian_oauth/exceptions'
 require 'active_support/core_ext'
+require 'diandian_oauth/models/response'
 require 'logger'
 module DiandianOAuth
 	VERSION = '0.0.3'

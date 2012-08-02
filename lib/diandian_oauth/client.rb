@@ -60,11 +60,12 @@ module DiandianOAuth
 			if interface
         access_token = self.access_token
         raise 'access_token is required' unless access_token
-        if force
+        response = if force
           interface.apply! access_token, args[0], &block
         else
 				  interface.apply access_token, args[0], &block
         end # force
+        DiandianOAuth::Response.from_response response
 			else
 				super
 			end

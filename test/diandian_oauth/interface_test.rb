@@ -22,10 +22,7 @@ class InterfaceTest < ActiveSupport::TestCase
   test 'user_info' do
     client = self.client
     client.access_token= ACCESS_TOKEN
-    begin
-      p client.user_info.parsed
-    rescue DiandianOAuth::API::TokenExpiredError => e
-    end
+    p client.user_info
   end
 
   test 'create_post' do
@@ -40,7 +37,7 @@ class InterfaceTest < ActiveSupport::TestCase
   test 'delete_post' do
     client = self.client
     client.access_token = ACCESS_TOKEN
-    p client.delete_post :blogCName => 'secretworry.diandian.com', :id => ''
+    p client.delete_post :blogCName => 'secretworry.diandian.com', :id => '3fdc4740-dcce-11e1-a2d7-782bcb43b268'
   end
 
   test 'posts' do

@@ -47,8 +47,7 @@ module DiandianOAuth
         # if and error occurs raise corresponding errors
         def apply! access_token, params, &block
           response = self.apply access_token, params, &block
-          response_meta = ResponseMeta.from_response response.parsed
-          response_meta.validate!
+          response.validate!
           response
         end
 
@@ -71,7 +70,7 @@ module DiandianOAuth
           if DiandianOAuth.logger.debug?
             DiandianOAuth.logger.debug("request with action:'#{action}', request_url:'#{request_url}', options:'#{options}'")
           end
-          access_token.request( action, request_url, options, &block).parsed
+          access_token.request( action, request_url, options, &block)
         end
         protected
         def request_verb

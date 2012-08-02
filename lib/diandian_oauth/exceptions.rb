@@ -11,6 +11,34 @@ module DiandianOAuth
   # APIException
   class APIError < Error
   end
+
+  class ResponseError < APIError
+  end
+
+  class InvalidateRequestError < ResponseError
+
+  end
+
+  class UnauthorizedClientError < ResponseError
+
+  end
+
+  class AccessDeniedError < ResponseError
+
+  end
+
+  class UnsupportedResponseTypeError < ResponseError
+
+  end
+
+  class InvalidScopeError < ResponseError
+
+  end
+
+  class TemporarilyUnavailableError < ResponseError
+
+  end
+
   class ParamIsRequiredError < APIError
   end
   class IllegalParamError < APIError
