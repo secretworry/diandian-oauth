@@ -34,6 +34,12 @@ class InterfaceTest < ActiveSupport::TestCase
       :title => 'Hello from diandian ruby client'
   end
 
+  test 'submissions' do
+    client = self.client
+    client.access_token = ACCESS_TOKEN
+    p client.submissions :blogCName => 'secretworry.diandian.com'
+  end
+
   test 'delete_post' do
     client = self.client
     client.access_token = ACCESS_TOKEN

@@ -232,8 +232,6 @@ module DiandianOAuth
           blog_cname = params[:blogCName]
           blog_uuid = params[:blogUuid]
           raise ParamIsRequiredError.new("blogCName or blogUuid is required for interface #{self.class.name}") unless blog_cname || blog_uuid
-          type = params[:type]
-          raise ParamIsRequiredError.new("type is required for interface #{self.class.name}") unless type
           API.url_for "/blog/#{blog_cname || blog_uuid}/post"
         end
       end
