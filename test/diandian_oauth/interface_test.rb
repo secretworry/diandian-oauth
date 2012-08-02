@@ -23,9 +23,24 @@ class InterfaceTest < ActiveSupport::TestCase
     client = self.client
     client.access_token= ACCESS_TOKEN
     begin
-      p client.user_info
-    rescue DiandianOAuth::API::TokenExpiredException => e
+      p client.user_info.parsed
+    rescue DiandianOAuth::API::TokenExpiredError => e
     end
+  end
+
+  test 'create_post' do
+    client = self.client
+    client.access_token = ACCESS_TOKEN
+    p client.create_post  :blogCName => 'secretworry.diandian.com',
+      :type => 'text',
+      :state => 'published',
+      :title => 'Hello from diandian ruby client'
+  end
+
+  test 'delete_post' do
+    client = self.client
+    client.access_token = ACCESS_TOKEN
+    p client.delete_post :blogCName => 'secretworry.diandian.com', :id => ''
   end
 
   test 'posts' do

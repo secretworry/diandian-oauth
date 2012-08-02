@@ -44,14 +44,16 @@ module DiandianOAuth
           raise 'subclasses must implement this method'
         end
 
-        # when the access_token is out-of-date, refresh it automatically
+        # if and error occurs raise corresponding errors
         def apply! access_token, params, &block
-          access_token.refresh! if access_token.expired?
-          self.apply access_token, params, &block
+          response = self.apply access_token, params, &block
+          response_meta = ResponseMeta.from_response response.parsed
+          response_meta.validate!
+          response
         end
 
         def apply access_token, params, &block
-          raise TokenExpiredException if access_token.expired?
+          raise TokenExpiredError if access_token.expired?
           params ||= {}
           action = case request_verb
           when /get/ then :get
@@ -61,15 +63,15 @@ module DiandianOAuth
           else raise "unrecognized verb '#{request_verb}'"
           end # case
           options = {
-            :params => extract_params(params),
+            :body => extract_params(params),
             :raise_errors => false,
             :parse => :json
           }
           request_url = self.request_url(params)
           if DiandianOAuth.logger.debug?
-            DiandianOAuth.logger.debug("request with action:'#{action}', request_url:'#{request_url}'")
+            DiandianOAuth.logger.debug("request with action:'#{action}', request_url:'#{request_url}', options:'#{options}'")
           end
-          access_token.request( action, request_url, options, &block)
+          access_token.request( action, request_url, options, &block).parsed
         end
         protected
         def request_verb
@@ -81,10 +83,10 @@ module DiandianOAuth
             key = ele[0]
             param = ele[1]
             param_value = params[key]
-            if param_value && param.required
+            if param_value
               result[key] = param_value
             elsif param.required
-              raise ParamIsRequiredException.new( "'#{key}' is required")
+              raise ParamIsRequiredError.new( "'#{key}' is required")
             end
             result
           end
@@ -135,9 +137,9 @@ module DiandianOAuth
       class Blog < Base
         protected
         def blog_request_url params
-          blog_cname = params[:blocCName]
+          blog_cname = params[:blogCName]
           blog_uuid = params[:blogUuid]
-          raise ParamIsRequiredException.new("blogCName or blogUuid is required for interface #{self.class.name}") unless blog_cname || blog_uuid
+          raise ParamIsRequiredError.new("blogCName or blogUuid is required for interface #{self.class.name}") unless blog_cname || blog_uuid
           API.url_for "/blog/#{blog_cname||blog_uuid}"
         end
       end #BlogInterface
@@ -155,7 +157,7 @@ module DiandianOAuth
           size = params[:size]
           if size
             unless BlogAvatar.is_valid_size size
-              raise IllegalParamException.new("'#{size}' is illegal")
+              raise IllegalParamError.new("'#{size}' is illegal")
             end
           end # if
         end
@@ -170,9 +172,9 @@ module DiandianOAuth
         param :limit, :required => false
         param :offset, :required => false
         def request_url params={}
-          blog_cname = params[:blocCName]
+          blog_cname = params[:blogCName]
           blog_uuid = params[:blogUuid]
-          raise ParamIsRequiredException.new("blogCName or blogUuid is required for interface #{self.class.name}") unless blog_cname || blog_uuid
+          raise ParamIsRequiredError.new("blogCName or blogUuid is required for interface #{self.class.name}") unless blog_cname || blog_uuid
           API.url_for "/blog/#{blog_cname || blog_uuid}/info"
         end
       end #BlogFollowers
@@ -186,9 +188,9 @@ module DiandianOAuth
         param :notesInfo, :required => false
         param :filter, :required => false
         def request_url params={}
-          blog_cname = params[:blocCName]
+          blog_cname = params[:blogCName]
           blog_uuid = params[:blogUuid]
-          raise ParamIsRequiredException.new("blogCName or blogUuid is required for interface #{self.class.name}") unless blog_cname || blog_uuid
+          raise ParamIsRequiredError.new("blogCName or blogUuid is required for interface #{self.class.name}") unless blog_cname || blog_uuid
           path = "/blog/#{blog_cname||blog_uuid}/posts"
           if params[:type]
             path = path + "/#{type}"
@@ -199,6 +201,8 @@ module DiandianOAuth
 
       class CreatePost < Base
         verb :post
+        param :type, :required => true
+        param :state, :required => true
         param :tag, :required => false
         param :slug, :required => false
         #text
@@ -226,11 +230,11 @@ module DiandianOAuth
         param :sourceUrl, :required => false
 
         def request_url params={}
-          blog_cname = params[:blocCName]
+          blog_cname = params[:blogCName]
           blog_uuid = params[:blogUuid]
-          raise ParamIsRequiredException.new("blogCName or blogUuid is required for interface #{self.class.name}") unless blog_cname || blog_uuid
+          raise ParamIsRequiredError.new("blogCName or blogUuid is required for interface #{self.class.name}") unless blog_cname || blog_uuid
           type = params[:type]
-          raise ParamIsRequiredException.new("type is required for interface #{self.class.name}") unless type
+          raise ParamIsRequiredError.new("type is required for interface #{self.class.name}") unless type
           API.url_for "/blog/#{blog_cname || blog_uuid}/post"
         end
       end
@@ -265,11 +269,11 @@ module DiandianOAuth
         param :sourceUrl, :required => false
 
         def request_url params={}
-          blog_cname = params[:blocCName]
+          blog_cname = params[:blogCName]
           blog_uuid = params[:blogUuid]
-          raise ParamIsRequiredException.new("blogCName or blogUuid is required for interface #{self.class.name}") unless blog_cname || blog_uuid
+          raise ParamIsRequiredError.new("blogCName or blogUuid is required for interface #{self.class.name}") unless blog_cname || blog_uuid
           type = params[:type]
-          raise ParamIsRequiredException.new("type is required for interface #{self.class.name}") unless type
+          raise ParamIsRequiredError.new("type is required for interface #{self.class.name}") unless type
           API.url_for "/blog/#{blog_cname || blog_uuid}/post/edit"
         end
       end
@@ -278,9 +282,9 @@ module DiandianOAuth
         verb :post
         param :id, :required => true
         def request_url params={}
-          blog_cname = params[:blocCName]
+          blog_cname = params[:blogCName]
           blog_uuid = params[:blogUuid]
-          raise ParamIsRequiredException.new("blogCName or blogUuid is required for interface #{self.class.name}") unless blog_cname || blog_uuid
+          raise ParamIsRequiredError.new("blogCName or blogUuid is required for interface #{self.class.name}") unless blog_cname || blog_uuid
           API.url_for "/blog/#{blog_cname || blog_uuid}/post/delete"
         end
       end
@@ -291,9 +295,9 @@ module DiandianOAuth
         param :tag, :required => false
         param :comment, :required => false
         def request_url params={}
-          blog_cname = params[:blocCName]
+          blog_cname = params[:blogCName]
           blog_uuid = params[:blogUuid]
-          raise ParamIsRequiredException.new("blogCName or blogUuid is required for interface #{self.class.name}") unless blog_cname || blog_uuid
+          raise ParamIsRequiredError.new("blogCName or blogUuid is required for interface #{self.class.name}") unless blog_cname || blog_uuid
           API.url_for "/blog/#{blog_cname || blog_uuid}/post/reblog"
         end
       end
@@ -321,7 +325,7 @@ module DiandianOAuth
 
         def request_url params={}
           tag = params[:tag]
-          raise ParamIsRequiredException.new("tag is required for interface #{self.class.name}") unless tag
+          raise ParamIsRequiredError.new("tag is required for interface #{self.class.name}") unless tag
           API.url_for "/tag/posts/#{tag}"
         end
       end #TagFeeds
@@ -346,7 +350,7 @@ module DiandianOAuth
         verb :post
         def request_url params={}
           tag = params[:tag]
-          raise ParamIsRequiredException.new("tag is required for interface #{self.class.name}") unless tag
+          raise ParamIsRequiredError.new("tag is required for interface #{self.class.name}") unless tag
           API.url_for '/tag/watch/#{tag}'
         end
       end
@@ -355,16 +359,16 @@ module DiandianOAuth
         verb :post
         def request_url params={}
           tag = params[:tag]
-          raise ParamIsRequiredException.new("tag is required for interface #{self.class.name}") unless tag
+          raise ParamIsRequiredError.new("tag is required for interface #{self.class.name}") unless tag
           API.url_for '/tag/watch/#{tag}'
         end
       end
 
       class Submissions < Base
         def request_url params={}
-          blog_cname = params[:blocCName]
+          blog_cname = params[:blogCName]
           blog_uuid = params[:blogUuid]
-          raise ParamIsRequiredException.new("blogCName or blogUuid is required for interface #{self.class.name}") unless blog_cname || blog_uuid
+          raise ParamIsRequiredError.new("blogCName or blogUuid is required for interface #{self.class.name}") unless blog_cname || blog_uuid
           API.url_for "/blog/#{blog_cname||blog_uuid}/submission"
         end
       end #Submissions
@@ -398,11 +402,11 @@ module DiandianOAuth
         param :sourceUrl, :required => false
 
         def request_url params={}
-          blog_cname = params[:blocCName]
+          blog_cname = params[:blogCName]
           blog_uuid = params[:blogUuid]
-          raise ParamIsRequiredException.new("blogCName or blogUuid is required for interface #{self.class.name}") unless blog_cname || blog_uuid
+          raise ParamIsRequiredError.new("blogCName or blogUuid is required for interface #{self.class.name}") unless blog_cname || blog_uuid
           type = params[:type]
-          raise ParamIsRequiredException.new("type is required for interface #{self.class.name}") unless type
+          raise ParamIsRequiredError.new("type is required for interface #{self.class.name}") unless type
           API.url_for "/blog/#{blog_cname || blog_uuid}/submission/#{type}"
         end
       end
@@ -411,11 +415,11 @@ module DiandianOAuth
         verb :post
         param :reason, :required => false
         def request_url params={}
-          blog_cname = params[:blocCName]
+          blog_cname = params[:blogCName]
           blog_uuid = params[:blogUuid]
-          raise ParamIsRequiredException.new("blogCName or blogUuid is required for interface #{self.class.name}") unless blog_cname || blog_uuid
+          raise ParamIsRequiredError.new("blogCName or blogUuid is required for interface #{self.class.name}") unless blog_cname || blog_uuid
           id = params[:id]
-          raise ParamIsRequiredException.new("id is required for interface #{self.class.name}") unless id
+          raise ParamIsRequiredError.new("id is required for interface #{self.class.name}") unless id
           API.url_for "/blog/#{blog_cname || blog_uuid}/submission/reject/#{id}"
         end
       end
