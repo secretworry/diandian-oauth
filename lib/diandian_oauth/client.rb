@@ -1,6 +1,8 @@
 require 'oauth2'
+require 'diandian_oauth/client/callbacks'
 module DiandianOAuth
 	class Client
+    include DiandianOAuth::Client::Callbacks
 		attr_accessor :api
 		def initialize client_id, client_secret, options={}
       @api = options[:api] || DiandianOAuth::API.new
@@ -38,13 +40,14 @@ module DiandianOAuth
       else
         begin
           DiandianOAuth.logger.warn('redirect_url is required for authorization_code grant type') unless @redirect_uri
-          @access_token = @client.get_token(
-              :client_id => @client.id,
-              :client_secret => @client.secret,
-              :grant_type => 'authorization_code',
-              :code => code_or_hash,
-              :redirect_uri => @redirect_uri
-          )
+          @access_token = @client.auth_code.get_token(code_or_hash, {:redirect_uri => @redirect_uri})
+          #@access_token = @client.get_token(
+          #    :client_id => @client.id,
+          #    :client_secret => @client.secret,
+          #    :grant_type => 'authorization_code',
+          #    :code => code_or_hash,
+          #    :redirect_uri => @redirect_uri
+          #)
         rescue OAuth2::Error => e
           DiandianOAuth.logger.error e.to_s
           raise e
@@ -61,11 +64,26 @@ module DiandianOAuth
         access_token = self.access_token
         raise 'access_token is required' unless access_token
         response = if force
-          interface.apply! access_token, args[0], &block
+          begin
+            token_expired = false
+            response = interface.apply access_token, args[0], &block
+            response.validate!
+          rescue TokenExpiredError => e
+            if DiandianOAuth.logger.debug?
+              DiandianOAuth.logger.debug("token '#{access_token}' expired")
+            end
+            new_access_token = access_token.refresh!
+            self.token_refreshed new_access_token
+            if DiandianOAuth.logger.debug?
+              DiandianOAuth.logger.debug("refreshed '#{access_token}' with '#{new_access_token}'")
+            end
+            access_token = new_access_token
+            token_expired = true
+          end while token_expired
+          response
         else
 				  interface.apply access_token, args[0], &block
         end # force
-        DiandianOAuth::Response.from_response response
 			else
 				super
 			end

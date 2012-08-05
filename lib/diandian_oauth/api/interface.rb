@@ -44,13 +44,6 @@ module DiandianOAuth
           raise 'subclasses must implement this method'
         end
 
-        # if and error occurs raise corresponding errors
-        def apply! access_token, params, &block
-          response = self.apply access_token, params, &block
-          response.validate!
-          response
-        end
-
         def apply access_token, params, &block
           raise TokenExpiredError if access_token.expired?
           params ||= {}
@@ -70,7 +63,7 @@ module DiandianOAuth
           if DiandianOAuth.logger.debug?
             DiandianOAuth.logger.debug("request with action:'#{action}', request_url:'#{request_url}', options:'#{options}'")
           end
-          access_token.request( action, request_url, options, &block)
+          DiandianOAuth::Response.from_response access_token.request( action, request_url, options, &block)
         end
         protected
         def request_verb
@@ -166,6 +159,16 @@ module DiandianOAuth
         end
 
       end #BlogAvatar
+
+      class PostInfo < Base
+        param :id, :required => true
+        def request_url params={}
+          blog_cname = params[:blogCName]
+          blog_uuid = params[:blogUuid]
+          raise ParamIsRequiredError.new("blogCName or blogUuid is required for interface #{self.class.name}") unless blog_cname || blog_uuid
+          API.url_for "/blog/#{blog_cname || blog_uuid}/posts"
+        end
+      end
 
       class BlogFollowers < Base
         param :limit, :required => false

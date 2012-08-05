@@ -1,14 +1,14 @@
 require File.join( File.dirname(__FILE__), 'test_helper')
 
 class InterfaceTest < ActiveSupport::TestCase
-  CLIENT_ID="3zgJwues92"
-  CLIENT_SECRET="1rxLZr5R4sweGUATGig25VBc1ka1xDEpkIqJ"
+  CLIENT_ID="fr2ejCbPrO"
+  CLIENT_SECRET="C5Cgprqe3DC674vdnaQlujko9ItuSAOB24qa"
   ACCESS_TOKEN = {
-      :access_token => 'adbab585-ea39-47e0-87ce-da7700fd3d9b',
-      :refresh_token => "79852349-5f2e-4e3b-93b8-845e239e61ff",
+      :access_token => '298b54f8-8ef1-40c7-9c1a-98df8386ea1a',
+      :refresh_token => "850b3a3e-7ff0-43a0-9a65-7c7fecb70c5a",
       :token_type => "bearer",
-      :expires_in => 604799,
-      :expires_at => 1344317317,
+      :expires_in => 3599,
+      :expires_at => 1344161999,
       :scope => "write read",
       :uid => "11449"
   }
@@ -23,6 +23,13 @@ class InterfaceTest < ActiveSupport::TestCase
     client = self.client
     client.access_token= ACCESS_TOKEN
     p client.user_info
+  end
+
+  test 'user_info!' do
+    client = self.client
+    client.access_token = ACCESS_TOKEN.merge(:expires_at => Time.now.to_i - 1.day.to_i)
+    puts "expired?: '#{client.access_token.expired?}'"
+    p client.user_info!
   end
 
   test 'create_post' do
@@ -53,6 +60,9 @@ class InterfaceTest < ActiveSupport::TestCase
   end
 
   def client
+    DiandianOAuth::Client.token_refreshed (lambda{|client, token|
+      p "token_refreshed: '#{token}'"
+    })
     @client ||= DiandianOAuth::Client.new CLIENT_ID, CLIENT_SECRET, :redirect_uri => 'http://example.com/callback'
   end
 end

@@ -9,10 +9,11 @@ module DiandianOAuth
       return result if result.error
       result.meta = response_json['meta']
       result.response = response_json['response']
+      result
     end
 
     def validate
-      !error && meta[:status] == 200
+      !error && meta['status'] == 200
     end
     alias_method :success?, :validate
 
@@ -33,7 +34,7 @@ module DiandianOAuth
           raise exception
         else
           exception =
-              case self.status
+              case meta[:status]
                 when 400000 then DiandianOAuth::ClientError
                 when 400001 then DiandianOAuth::ParameterError
                 when 400010 then DiandianOAuth::EmailError
