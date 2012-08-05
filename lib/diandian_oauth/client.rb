@@ -70,12 +70,12 @@ module DiandianOAuth
             response.validate!
           rescue TokenExpiredError => e
             if DiandianOAuth.logger.debug?
-              DiandianOAuth.logger.debug("token '#{access_token}' expired")
+              DiandianOAuth.logger.debug("token '#{access_token.inspect}' expired")
             end
             new_access_token = access_token.refresh!
             self.token_refreshed new_access_token
             if DiandianOAuth.logger.debug?
-              DiandianOAuth.logger.debug("refreshed '#{access_token}' with '#{new_access_token}'")
+              DiandianOAuth.logger.debug("refreshed '#{access_token.inspect}' with '#{new_access_token}'")
             end
             access_token = new_access_token
             token_expired = true
