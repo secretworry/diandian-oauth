@@ -5,7 +5,7 @@ require 'diandian_oauth/exceptions'
 require 'diandian_oauth/models/response'
 require 'logger'
 module DiandianOAuth
-	VERSION = '0.1.0'
+	VERSION = '0.1.1'
   module Logger
     def logger *args
       if args.empty?
