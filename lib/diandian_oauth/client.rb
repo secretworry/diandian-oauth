@@ -3,7 +3,7 @@ require 'diandian_oauth/client/callbacks'
 module DiandianOAuth
 	class Client
     include DiandianOAuth::Client::Callbacks
-		attr_accessor :api
+		attr_accessor :api, :client
 		def initialize client_id, client_secret, options={}
       @api = options[:api] || DiandianOAuth::API.new
       @redirect_uri = options[:redirect_uri]
@@ -11,7 +11,16 @@ module DiandianOAuth
           :authorize_url => @api.authorize_url,
           :token_url => @api.token_url
         }
-		end
+      self.config_client_middleware(@client)
+    end
+
+    def config_client_middleware client
+      client.options[:connection_build] = Proc.new do |builder|
+        builder.request :multipart
+        builder.request :url_encoded
+        builder.adapter :net_http
+      end
+    end
 
 		def authorize_url response_type='code', scope=[]
       if response_type.is_a? Array
@@ -77,7 +86,7 @@ module DiandianOAuth
             if DiandianOAuth.logger.debug?
               DiandianOAuth.logger.debug("refreshed '#{access_token.inspect}' with '#{new_access_token}'")
             end
-            access_token = new_access_token
+            self.access_token = access_token = new_access_token
             token_expired = true
           end while token_expired
           response

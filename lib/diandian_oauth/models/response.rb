@@ -19,6 +19,7 @@ module DiandianOAuth
 
     # throw exception when an error occurs
     def validate!
+      puts "error: '#{self.inspect}'"
       unless self.validate
         if error
           exception =

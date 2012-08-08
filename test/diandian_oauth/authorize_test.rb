@@ -12,7 +12,7 @@ class AuthorizeTest < ActiveSupport::TestCase
   end
 
   test 'access_token' do
-    code = '5vrru1'
+    code = 'dJGgxE'
     unless code.empty?
       assert_nothing_raised do
         client = DiandianOAuth::Client.new CLIENT_ID, CLIENT_SECRET, :redirect_uri => 'http://example.com/users/auth/diandian/callback'

@@ -1,3 +1,10 @@
+GIT
+  remote: https://github.com/secretworry/faraday.git
+  revision: b34ecbb6cd4d0b2280cdb19a15f1d39a9b0eb309
+  specs:
+    faraday (0.8.0)
+      multipart-post (~> 1.1)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -8,8 +15,6 @@ GEM
       i18n (~> 0.6)
       multi_json (~> 1.0)
     builder (3.0.0)
-    faraday (0.8.1)
-      multipart-post (~> 1.1)
     httpauth (0.1)
     i18n (0.6.0)
     jwt (0.1.5)
@@ -30,4 +35,5 @@ PLATFORMS
 DEPENDENCIES
   activemodel (~> 3.2.6)
   activesupport (~> 3.2.1)
+  faraday!
   oauth2 (~> 0.8.0)

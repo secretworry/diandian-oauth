@@ -39,6 +39,35 @@ module DiandianOAuth
         end
       end #Param
 
+      class Params
+        def initialize(params = {})
+          @params = params.symbolize_keys!
+        end
+        def [] key
+          @params[key.to_sym]
+        end
+
+        def []= key, value
+          @params[key.to_sym] = value
+        end
+
+        def to_a
+          @params.reduce([]) do |all, (key, value)|
+            case value
+              when Array
+                value.each{|v| all << [key, v]}
+              else
+                all << [key, value]
+            end
+            all
+          end
+        end
+
+        def to_h
+          @params
+        end
+      end
+
       class Base
         def request_url params = {}
           raise 'subclasses must implement this method'
@@ -46,7 +75,7 @@ module DiandianOAuth
 
         def apply access_token, params, &block
           raise TokenExpiredError if access_token.expired?
-          params ||= {}
+          params = Params.new( params || {})
           action = case request_verb
           when /get/ then :get
           when /post/ then :post
@@ -55,7 +84,7 @@ module DiandianOAuth
           else raise "unrecognized verb '#{request_verb}'"
           end # case
           options = {
-            :body => extract_params(params),
+            :body => extract_params(params).to_a,
             :raise_errors => false,
             :parse => :json
           }
@@ -70,14 +99,11 @@ module DiandianOAuth
           self.class.verb
         end
         def extract_params params
-          params.symbolize_keys!
-          self.class.params.each_pair.reduce({}) do |result, ele|
-            key = ele[0]
-            param = ele[1]
+          self.class.params.reduce(Params.new) do |result, (key, value)|
             param_value = params[key]
             if param_value
               result[key] = param_value
-            elsif param.required
+            elsif value.required
               raise ParamIsRequiredError.new( "'#{key}' is required")
             end
             result
