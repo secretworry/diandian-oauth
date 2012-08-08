@@ -19,7 +19,6 @@ module DiandianOAuth
 
     # throw exception when an error occurs
     def validate!
-      puts "error: '#{self.inspect}'"
       unless self.validate
         if error
           exception =
@@ -32,7 +31,7 @@ module DiandianOAuth
                 when 'server_error' then DiandianOAuth::ServerError
                 else APIError
               end
-          raise exception
+          raise exception, error
         else
           exception =
               case meta[:status]
@@ -68,7 +67,7 @@ module DiandianOAuth
                 when 503001 then DiandianOAuth::UpgradingError
                 else DiandianOAuth::APIError
               end
-          raise exception
+          raise exception, meta
         end
       end
     end
