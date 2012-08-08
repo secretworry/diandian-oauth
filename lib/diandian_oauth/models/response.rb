@@ -31,6 +31,7 @@ module DiandianOAuth
                 when 'server_error' then DiandianOAuth::ServerError
                 else APIError
               end
+          DiandianOAuth.logger.error("response error '#{error}'")
           raise exception, error
         else
           exception =
@@ -67,6 +68,7 @@ module DiandianOAuth
                 when 503001 then DiandianOAuth::UpgradingError
                 else DiandianOAuth::APIError
               end
+          DiandianOAuth.logger.error("response error meta '#{meta}'")
           raise exception, meta
         end
       end
