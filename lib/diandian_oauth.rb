@@ -11,7 +11,10 @@ module DiandianOAuth
       if args.empty?
         @logger
       else
-        @logger = ::Logger.new *args
+        @logger = case args.first
+          when ::Logger then args.first
+          else ::Logger.new *args
+        end
       end
     end
   end
