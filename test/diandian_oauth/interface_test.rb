@@ -4,14 +4,14 @@ class InterfaceTest < ActiveSupport::TestCase
   CLIENT_ID="fr2ejCbPrO"
   CLIENT_SECRET="C5Cgprqe3DC674vdnaQlujko9ItuSAOB24qa"
   ACCESS_TOKEN = {
-      :access_token => '66e4ca32-0aa8-4f92-a4a8-614218546e85',
-      :refresh_token => "420db62f-c1f7-4199-890c-edf2520d4321",
-      :token_type => "bearer",
-      :expires_in => 3599,
-      :expires_at => 1344515869,
-      :scope => "write read",
-      :uid => "11449"
-  }
+          :access_token => 'b37c1a3c-d2aa-48f2-b714-ebc9b942efd8',
+          :refresh_token => "f52f7f63-52da-48ea-8395-ecc32c512426",
+          :token_type => "bearer",
+          :expires_in => 3527,
+          :expires_at => 1344518048,
+          :scope => "write read",
+          :uid => ""
+        }
 
   test 'refresh_token' do
     client = self.client
@@ -72,8 +72,8 @@ class InterfaceTest < ActiveSupport::TestCase
 
   def client
     DiandianOAuth::Client.token_refreshed (lambda{|client, uid, token|
-      p "token_refreshed: '#{uid}': #{token}'"
+      puts "token_refreshed: '#{uid}': #{token}'"
     })
-    @client ||= DiandianOAuth::Client.new CLIENT_ID, CLIENT_SECRET, :redirect_uri => 'http://example.com/callback'
+    @client ||= DiandianOAuth::Client.new CLIENT_ID, CLIENT_SECRET, :redirect_uri => 'http://tree-hollow.dianapp.com/callback'
   end
 end
