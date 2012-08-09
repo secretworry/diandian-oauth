@@ -1,16 +1,14 @@
 require File.join( File.dirname(__FILE__), 'test_helper')
 
-require 'faraday/request/diandian_multipart'
-
 class InterfaceTest < ActiveSupport::TestCase
   CLIENT_ID="fr2ejCbPrO"
   CLIENT_SECRET="C5Cgprqe3DC674vdnaQlujko9ItuSAOB24qa"
   ACCESS_TOKEN = {
-      :access_token => '92eb54ba-4be0-4a75-ae2a-d185d0a0f751',
-      :refresh_token => "fa522c29-fc69-4d45-ab59-b9e26b9e5ed5",
+      :access_token => '66e4ca32-0aa8-4f92-a4a8-614218546e85',
+      :refresh_token => "420db62f-c1f7-4199-890c-edf2520d4321",
       :token_type => "bearer",
-      :expires_in => 3406,
-      :expires_at => 1344410022,
+      :expires_in => 3599,
+      :expires_at => 1344515869,
       :scope => "write read",
       :uid => "11449"
   }
@@ -37,7 +35,7 @@ class InterfaceTest < ActiveSupport::TestCase
   test 'create_post' do
     client = self.client
     client.access_token = ACCESS_TOKEN
-    p client.create_post  :blogCName => 'secretworry.diandian.com',
+    p client.create_post!  :blogCName => 'secretworry.diandian.com',
       :type => 'text',
       :state => 'published',
       :title => 'Hello from diandian ruby client'
@@ -73,8 +71,8 @@ class InterfaceTest < ActiveSupport::TestCase
   end
 
   def client
-    DiandianOAuth::Client.token_refreshed (lambda{|client, token|
-      p "token_refreshed: '#{token}'"
+    DiandianOAuth::Client.token_refreshed (lambda{|client, uid, token|
+      p "token_refreshed: '#{uid}': #{token}'"
     })
     @client ||= DiandianOAuth::Client.new CLIENT_ID, CLIENT_SECRET, :redirect_uri => 'http://example.com/callback'
   end

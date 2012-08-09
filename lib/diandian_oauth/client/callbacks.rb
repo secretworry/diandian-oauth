@@ -38,9 +38,9 @@ module DiandianOAuth
         private
       end
       module InstanceMethods
-        def token_refreshed access_token
+        def token_refreshed uid, access_token
           self.class.callbacks[:token_refreshed].each do |callback|
-            callback.apply(self, access_token)
+            callback.apply(self, uid, access_token)
           end
         end
       end

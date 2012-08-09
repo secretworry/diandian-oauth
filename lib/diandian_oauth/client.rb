@@ -50,13 +50,6 @@ module DiandianOAuth
         begin
           DiandianOAuth.logger.warn('redirect_url is required for authorization_code grant type') unless @redirect_uri
           @access_token = @client.auth_code.get_token(code_or_hash, {:redirect_uri => @redirect_uri})
-          #@access_token = @client.get_token(
-          #    :client_id => @client.id,
-          #    :client_secret => @client.secret,
-          #    :grant_type => 'authorization_code',
-          #    :code => code_or_hash,
-          #    :redirect_uri => @redirect_uri
-          #)
         rescue OAuth2::Error => e
           DiandianOAuth.logger.error e.to_s
           raise e
@@ -81,10 +74,11 @@ module DiandianOAuth
             if DiandianOAuth.logger.debug?
               DiandianOAuth.logger.debug("token '#{access_token.inspect}' expired")
             end
+            uid = access_token.params['uid']
             new_access_token = access_token.refresh!
-            self.token_refreshed new_access_token
+            self.token_refreshed uid, new_access_token
             if DiandianOAuth.logger.debug?
-              DiandianOAuth.logger.debug("refreshed '#{access_token.inspect}' with '#{new_access_token}'")
+              DiandianOAuth.logger.debug("refreshed '#{access_token.inspect}' of uid: '#{uid}' with '#{new_access_token}'")
             end
             self.access_token = access_token = new_access_token
             token_expired = true
