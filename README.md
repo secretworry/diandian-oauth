@@ -7,11 +7,11 @@ Usage
 -----
 
 ```ruby
-# initialize client #
+## initialize client ##
 
 client ||= DiandianOAuth::Client.new config.client_id, config.client_secret, config.client_options
 
-# Assign access_token #
+## Assign access_token ##
 
 client.access_token = {
           :access_token => '312e7a48-8d05-4cd9-a3a9-044d2f47e2af',
@@ -23,7 +23,7 @@ client.access_token = {
           :uid => "11449"
         }
 
-# Basic usage #
+## Basic usage ##
 
 client.user_info # Get user_info
 
@@ -41,11 +41,31 @@ client.create_post! :blogCName => BLOG_CNAME,
       :itemDesc => %w[test test]
       :caption => "<p>test</p>" # create a photo post
 
-## Register a callback after the access_token is refreshed
+## Register a callback after the access_token is refreshed ##
 
 DiandianOAuth::Client.token_refreshed (lambda{|client, uid, token|
   puts "token_refreshed: '#{uid}': #{token}'"
 })
+
+## Handle the response ##
+
+response = client.an_interface! params # response is an instance of DiandianOAuth::Response
+
+unless response.success?
+  ## handle errors here
+  puts response.error
+  puts response.meta
+else
+  puts response.response # the response part of the server response
+end
+
+begin
+  response.validate! #this invocation will raise corresponding error for an error response
+rescue APIException => e
+  #handle errors here
+end
+
+response.internal # the original response, an instance of Faraday::Response
 ```
 
 Supported Interfaces
