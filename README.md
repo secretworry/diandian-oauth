@@ -78,21 +78,21 @@ All the interfaces supported(/registerd) can be found at lib/diandian_oauth/api.
 Extend Interface
 ------------------------
 
-1. Extend DiandianOAuth::API::Interface::Base
-  ```ruby
-  class NewInterface < DiandianOAuth::API::Interface::Base
-  end
-  ```
-2. Declare the request verb( default is get) and params
-  ```ruby
-  verb :get
-  param :limit, :required => false
-  param :offset, :required => false
-  ```
-3. override request_url to generate request_url
-4. register interface to the API object
-  ```ruby
-  API.interface :new_interface, NewInterface
-  ```
+1.  Extend DiandianOAuth::API::Interface::Base
+    ```ruby
+    class NewInterface < DiandianOAuth::API::Interface::Base
+    end
+    ```
+2.  Declare the request verb( default is get) and params
+    ```ruby
+    verb :get
+    param :limit, :required => false
+    param :offset, :required => false
+    ```
+3.  Override request_url to generate request_url
+4.  Register interface to the API object
+    ```ruby
+    API.interface :new_interface, NewInterface
+    ```
 
 
