@@ -7,11 +7,11 @@ Usage
 -----
 
 ```ruby
-## initialize client ##
+# initialize client #
 
 client ||= DiandianOAuth::Client.new config.client_id, config.client_secret, config.client_options
 
-## Assign access_token ##
+# Assign access_token #
 
 client.access_token = {
           :access_token => '312e7a48-8d05-4cd9-a3a9-044d2f47e2af',
@@ -23,7 +23,7 @@ client.access_token = {
           :uid => "11449"
         }
 
-## Basic usage ##
+# Basic usage #
 
 client.user_info # Get user_info
 
