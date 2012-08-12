@@ -4,13 +4,13 @@ class InterfaceTest < ActiveSupport::TestCase
   CLIENT_ID="fr2ejCbPrO"
   CLIENT_SECRET="C5Cgprqe3DC674vdnaQlujko9ItuSAOB24qa"
   ACCESS_TOKEN = {
-          :access_token => 'b37c1a3c-d2aa-48f2-b714-ebc9b942efd8',
-          :refresh_token => "f52f7f63-52da-48ea-8395-ecc32c512426",
+          :access_token => '312e7a48-8d05-4cd9-a3a9-044d2f47e2af',
+          :refresh_token => "79852349-5f2e-4e3b-93b8-845e239e61ff",
           :token_type => "bearer",
-          :expires_in => 3527,
-          :expires_at => 1344518048,
+          :expires_in => 604799,
+          :expires_at => 1345201711,
           :scope => "write read",
-          :uid => ""
+          :uid => "11449"
         }
 
   test 'refresh_token' do
@@ -44,12 +44,12 @@ class InterfaceTest < ActiveSupport::TestCase
   test 'create_photo_post' do
     client = self.client
     client.access_token = ACCESS_TOKEN
-    Faraday::Request.register_middleware :diandian_multipart => Faraday::Request::DiandianMultipart
     p client.user_info!
     p client.create_post! :blogCName => 'tree-hollow.diandian.com',
       :type =>  'photo',
       :state => 'published',
-      :data => [Faraday::UploadIO.new('/Users/siyudu/Pictures/test/blue_700_342.jpg', 'image/jpeg'), Faraday::UploadIO.new('/Users/siyudu/Pictures/test/white_700_342.jpg', 'image/jpeg')]
+      :data => [Faraday::UploadIO.new('/Users/siyudu/Pictures/test/blue_700_342.jpg', 'image/jpeg'), Faraday::UploadIO.new('/Users/siyudu/Pictures/test/white_700_342.jpg', 'image/jpeg')],
+      :caption => "<p>test</p>"
   end
 
   test 'submissions' do

@@ -8,13 +8,9 @@ GIT
 GEM
   remote: http://rubygems.org/
   specs:
-    activemodel (3.2.7)
-      activesupport (= 3.2.7)
-      builder (~> 3.0.0)
     activesupport (3.2.7)
       i18n (~> 0.6)
       multi_json (~> 1.0)
-    builder (3.0.0)
     httpauth (0.1)
     i18n (0.6.0)
     jwt (0.1.5)
@@ -33,7 +29,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  activemodel (~> 3.2.6)
   activesupport (~> 3.2.1)
   faraday!
   oauth2 (~> 0.8.0)
