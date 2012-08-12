@@ -7,11 +7,19 @@ Usage
 -----
 
 ```ruby
-## initialize client ##
+## Initialize client ##
 
 client ||= DiandianOAuth::Client.new config.client_id, config.client_secret, config.client_options
 
-## Assign access_token ##
+## Get authorization url ##
+
+client.authorization_url
+
+## Get access token with responded code ##
+
+client.access_token CODE
+
+## or Assign an existing access_token ##
 
 client.access_token = {
           :access_token => '312e7a48-8d05-4cd9-a3a9-044d2f47e2af',
