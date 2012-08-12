@@ -98,4 +98,11 @@ Extend Interface
     API.interface :new_interface, NewInterface
     ```
 
+TODO
+----
+
+1. group param declarations to enable a refined parameters checking
+2. make the error processing more robust
+3. give more advises to diandain to help them make their API more feasible
+
 
