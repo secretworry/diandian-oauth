@@ -79,11 +79,13 @@ Extend Interface
 ------------------------
 
 1.  Extend DiandianOAuth::API::Interface::Base
+
     ```ruby
     class NewInterface < DiandianOAuth::API::Interface::Base
     end
     ```
 2.  Declare the request verb( default is get) and params
+
     ```ruby
     verb :get
     param :limit, :required => false
@@ -91,6 +93,7 @@ Extend Interface
     ```
 3.  Override request_url to generate request_url
 4.  Register interface to the API object
+
     ```ruby
     API.interface :new_interface, NewInterface
     ```
