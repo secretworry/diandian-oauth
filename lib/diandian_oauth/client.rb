@@ -74,11 +74,12 @@ module DiandianOAuth
             if DiandianOAuth.logger.debug?
               DiandianOAuth.logger.debug("token '#{access_token.inspect}' expired")
             end
-            uid = access_token.params['uid']
+            uid = access_token.params[:uid]
+            access_token_inspect = access_token.inspect
             new_access_token = access_token.refresh!
             self.token_refreshed uid, new_access_token
             if DiandianOAuth.logger.debug?
-              DiandianOAuth.logger.debug("refreshed '#{access_token.inspect}' of uid: '#{uid}' with '#{new_access_token}'")
+              DiandianOAuth.logger.debug("refreshed '#{access_token_inspect}' of uid: '#{uid}' with '#{new_access_token.inspect}'")
             end
             self.access_token = access_token = new_access_token
             token_expired = true
