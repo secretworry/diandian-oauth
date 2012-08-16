@@ -231,7 +231,7 @@ module DiandianOAuth
         verb :post
         param :type, :required => true
         param :state, :required => true
-        param :tags, :required => false
+        param :tag, :required => false
         param :slug, :required => false
         #text
         param :title, :required => false
